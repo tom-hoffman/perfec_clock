@@ -28,4 +28,21 @@ Moving the switch to the right changes to **active mode**.
 
 When switching to **tap mode**, a MIDI stop message is sent.  When switching out of **tap mode** a MIDI start message is sent.
 
+## Configuration
+
+In `config.py`, the following can be adjusted:
+* `USB_NAME`: "CLOCK" by default.
+* `millis_per_pulse`: initial tempo based on milliseconds between MIDI clock messages. 28 by default (about 88 bpm).
+* `ppqn`: pulses per quarter notes. This controls the rate of white neopixel advances.  24 is the default MIDI standard for quarter notes.
+* `midi_repeat`: in active mode, number of times that the time is checked before checking to see if the switch moved.  256 by default.
+
+## Coding notes
+
+The priority in this version is timing precision for both the MIDI pulses and reading the button taps.  Many possible features were deferred in the interest of keeping this version clean and fast, given the inherent slowness and unreliable precision in running CircuitPython on a CPX!
+
+Other components of the PERFEC System expect MIDI start and stop messages to reset sequences, so it is important to implement those at appropriate times.
+
+This package is based on the **MMB template**.  Since this package only sends three global MIDI messages (and receives none), there is no separate `midi_controller.py` and the modified version of `minimal_midi.py` is extra minimal.
+
+I tried using more `super()` class calls in `board_controller.py` to get rid of repetitive code in the subclasses.
 
