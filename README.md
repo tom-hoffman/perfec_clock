@@ -36,7 +36,13 @@ In `config.py`, the following can be adjusted:
 * `ppqn`: pulses per quarter notes. This controls the rate of white neopixel advances.  24 is the default MIDI standard for quarter notes.
 * `midi_repeat`: in active mode, number of times that the time is checked before checking to see if the switch moved.  256 by default.
 
+## Installation
+
+The `.py` files can be dragged directly onto a CPX's `CIRCUITPY` drive.
+
 ## Coding notes
+
+Note that this package is small enough as to not requre precompilation into `.mpy` files, so there is no `make.py` file.
 
 The priority in this version is timing precision for both the MIDI pulses and reading the button taps.  Many possible features were deferred in the interest of keeping this version clean and fast, given the inherent slowness and unreliable precision in running CircuitPython on a CPX!
 
