@@ -18,7 +18,7 @@ ppqn: int = 24
 
 # Increasing this number makes the time slightly more accurate
 # and the board somewhat less responsive.
-midi_repeat: int = 256
+midi_repeat: int = 255
 
 
 
