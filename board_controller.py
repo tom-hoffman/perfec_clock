@@ -8,7 +8,7 @@ import config
 import supervisor
 
 
-class View(object):
+class View():
 
     def __init__(self, model, midi, pix=cpx.pix):
         self.model = model
@@ -34,7 +34,7 @@ class View(object):
 class ActiveView(View):
 
     def check_time(self):
-        for i in range(0, config.midi_repeat):
+        for _ in range(0, config.midi_repeat):
             super().check_time()
 
     def update_mode(self):
@@ -56,7 +56,7 @@ class ActiveView(View):
 
     def send_pulse(self):
         self.midi.send_clock()
-        cpx.led.value = not(cpx.led.value)
+        cpx.led.value = not cpx.led.value
 
 
 class TapView(View):

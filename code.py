@@ -14,7 +14,7 @@ from minimal_midi import MinimalMidi   # pylint: disable=wrong-import-position
 
 print("After minimal_midi: " + str(gc.mem_free()))
 
-import cpx   # pylint: disable=warning-name
+import cpx   # pylint: disable=wrong-import-position
 print("After cpx: " + str(gc.mem_free()))
 
 from model import ApplicationModel   # pylint: disable=wrong-import-position

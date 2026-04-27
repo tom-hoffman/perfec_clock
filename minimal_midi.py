@@ -2,7 +2,7 @@
 # minimal_midi.py
 # copyright 2026, Tom Hoffman
 # MIT License
-# 
+#
 # # This version only sends three global messages.
 
 # Note that MinimalMidi uses 0-15 numbering for MIDI channels.
@@ -23,12 +23,12 @@ _OUTIE = usb_midi.ports[1]
 
 class MinimalMidi(object):
     """Tightly implementing the subset of MIDI we need."""
-    
+
     def send_clock(self):
         _OUTIE.write(_CLOCK)
-    
+
     def send_start(self):
         _OUTIE.write(_START)
-    
+
     def send_stop(self):
         _OUTIE.write(_STOP)
