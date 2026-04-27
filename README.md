@@ -1,5 +1,7 @@
 # PERFEC System: Tap-tempo MIDI Clock
 
+![pylint]()
+
 A MIDI clock for the PERFEC System, written in CircuitPython for the Adafruit Circuit Playground Express (CPX).
 
 ## Use
