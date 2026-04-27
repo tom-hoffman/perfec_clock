@@ -7,20 +7,20 @@
 
 import gc
 print("After gc: " + str(gc.mem_free()))
-import supervisor   # pylint: disable=warning-name
+import supervisor   # pylint: disable=wrong-import-position
 
 
-from minimal_midi import MinimalMidi   # pylint: disable=warning-name
+from minimal_midi import MinimalMidi   # pylint: disable=wrong-import-position
 
 print("After minimal_midi: " + str(gc.mem_free()))
 
 import cpx   # pylint: disable=warning-name
 print("After cpx: " + str(gc.mem_free()))
 
-from model import ApplicationModel   # pylint: disable=warning-name
+from model import ApplicationModel   # pylint: disable=wrong-import-position
 print("After model: " + str(gc.mem_free()))
 
-from board_controller import ActiveView   # pylint: disable=warning-name
+from board_controller import ActiveView   # pylint: disable=wrong-import-position
 print("After board controller: " + str(gc.mem_free()))
 
 
@@ -44,9 +44,3 @@ while True:
     if mod.changed:
         bc.update_pixels()
         mod.changed = False
-
-
-
-
-
-
