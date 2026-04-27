@@ -7,25 +7,26 @@
 
 import gc
 print("After gc: " + str(gc.mem_free()))
+import supervisor   # pylint: disable=warning-name
 
-import supervisor
 
-from minimal_midi import MinimalMidi
+from minimal_midi import MinimalMidi   # pylint: disable=warning-name
+
 print("After minimal_midi: " + str(gc.mem_free()))
 
-import cpx
-
+import cpx   # pylint: disable=warning-name
 print("After cpx: " + str(gc.mem_free()))
 
-from model import ApplicationModel
+from model import ApplicationModel   # pylint: disable=warning-name
 print("After model: " + str(gc.mem_free()))
 
-from board_controller import ActiveView 
+from board_controller import ActiveView   # pylint: disable=warning-name
 print("After board controller: " + str(gc.mem_free()))
+
 
 midi = MinimalMidi()
 
-mod = ApplicationModel() 
+mod = ApplicationModel()
 
 bc = ActiveView(mod, midi).update_mode()
 cpx.led.value = False
@@ -47,5 +48,5 @@ while True:
 
 
 
-        
+
 

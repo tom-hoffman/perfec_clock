@@ -11,7 +11,7 @@ import supervisor
 class View(object):
 
     def __init__(self, model, midi, pix=cpx.pix):
-        self.model = model 
+        self.model = model
         self.midi = midi
         self.pix = pix
 
@@ -19,13 +19,13 @@ class View(object):
         if self.model.is_time_to_advance():
             self.model.increment_pulses()
             self.send_pulse()
-    
+
     def update_mode(self):
         self.model.changed = True
         self.model.reset_photon()
-    
+
     def update_pixels(self, c):
-        # Re-draw the neopixels.
+        # Re-draw the neopixels
         self.pix.fill(c)
         self.pix[self.model.photon] = (32, 32, 32)
         cpx.pix.show()
@@ -50,7 +50,7 @@ class ActiveView(View):
 
     def check_buttons(self):
         pass
-    
+
     def update_pixels(self):
         super().update_pixels((0, 8, 0))
 
@@ -75,7 +75,7 @@ class TapView(View):
         else:
             super().update_mode()
             self.midi.send_start()
-            return ActiveView(self.model, self.midi, self.pix)    
+            return ActiveView(self.model, self.midi, self.pix)
 
     def update_pixels(self):
         super().update_pixels((8, 0, 0))

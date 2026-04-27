@@ -9,7 +9,7 @@
 
 # Because of the limitations of the old school Microsoft format
 # this MUST BE 8 CHARACTERS OR LESS
-# and ALL CAPS are recommended.  
+# and ALL CAPS are recommended.
 
 import config
 import storage

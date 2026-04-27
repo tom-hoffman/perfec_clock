@@ -9,8 +9,8 @@ _TICKS_HALFPERIOD = const(_TICKS_PERIOD//2)
 
 class ApplicationModel(object):
     '''This class should contain properties that store the state of the application.'''
-    def __init__(self, 
-                 millis_per_pulse=config.millis_per_pulse, 
+    def __init__(self,
+                 millis_per_pulse=config.millis_per_pulse,
                  pulses=0,
                  last_tap=None,
                  next_pulse=None,

@@ -23,7 +23,7 @@ class Debouncer(object):
         changed = new and (not self.current_value)
         self.current_value = new
         return changed
-        
+
 led = digitalio.DigitalInOut(board.LED)
 led.direction = digitalio.Direction.OUTPUT
 led.value = True
