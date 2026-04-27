@@ -5,7 +5,7 @@
 # Give each Circuit Playground a unique name so you don't get confused!
 # Note that a MIDI network should only have one clock
 # so you don't need to add an identifying number
-USB_NAME = "CLOCK"
+USB_NAME: str = "CLOCK"
 
 # Starting value for time between MIDI clock pulses
 # the official default is 24 per quarter note
