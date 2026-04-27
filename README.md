@@ -34,7 +34,7 @@ When switching to **tap mode**, a MIDI stop message is sent.  When switching out
 In `config.py`, the following can be adjusted:
 * `USB_NAME`: "CLOCK" by default.
 * `millis_per_pulse`: initial tempo based on milliseconds between MIDI clock messages. 28 by default (about 88 bpm).
-* `ppqn`: pulses per quarter notes. This controls the rate of white neopixel advances.  24 is the default MIDI standard for quarter notes.
+* `ppqn`: pulses per quarter note. This controls the rate of white neopixel advances.  24 is the default MIDI standard for quarter notes.
 * `midi_repeat`: in active mode, number of times that the time is checked before checking to see if the switch moved.  255 by default.
 
 ## Installation
