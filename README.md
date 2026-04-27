@@ -2,6 +2,8 @@
 
 A MIDI clock for the PERFEC System, written in CircuitPython for the Adafruit Circuit Playground Express (CPX).
 
+This will provide a timing reference to all MIDI devices connected to the same USB network (hub/computer) as the clock.  It will work with a CPX-based PERFEC System as well as any commercial or DIY MIDI devices that connect directly to USB or through an adapter.
+
 ## Use
 
 The clock has two modes, set by the CPX switch:
@@ -16,7 +18,6 @@ In **active mode**, the clock is sending out MIDI clock messages (pulses).  The 
 In this mode the buttons have no effect.  Moving the switch left changes to **tap mode**.
 
 When starting in or switching to active mode, a MIDI start message is sent.  
-
 
 ### tap mode
 
@@ -42,13 +43,14 @@ The `.py` files can be dragged directly onto a CPX's `CIRCUITPY` drive.  No prec
 
 ## Coding notes
 
+This package is based on the **MMB template**.  Since this package only sends three global MIDI messages (and receives none), there is no separate `midi_controller.py` and the modified version of `minimal_midi.py` is extra minimal.
+
 Note that this package is small enough as to not requre precompilation into `.mpy` files, so there is no `make.py` file.
 
 The priority in this version is timing precision for both the MIDI pulses and reading the button taps.  Many possible features were deferred in the interest of keeping this version clean and fast, given the inherent slowness and unreliable precision in running CircuitPython on a CPX!
 
-Other components of the PERFEC System expect MIDI start and stop messages to reset sequences, so it is important to implement those at appropriate times.
+This is the base clock implementation for the PERFEC System.  Any further development of this package should focus on efficiency and precision.  Additional features should be added to a new/alternative package.
 
-This package is based on the **MMB template**.  Since this package only sends three global MIDI messages (and receives none), there is no separate `midi_controller.py` and the modified version of `minimal_midi.py` is extra minimal.
+Other components of the PERFEC System expect MIDI start and stop messages to reset sequences, so it is important that this implements those at appropriate times.
 
 I tried using more `super()` class calls in `board_controller.py` to get rid of repetitive code in the subclasses.
-
