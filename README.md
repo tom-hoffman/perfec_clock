@@ -51,6 +51,6 @@ The priority in this version is timing precision for both the MIDI pulses and re
 
 This is the base clock implementation for the PERFEC System.  Any further development of this package should focus on efficiency and precision.  Additional features should be added to a new/alternative package.
 
-Other components of the PERFEC System expect MIDI start and stop messages to reset sequences, so it is important that this implements those at appropriate times.
+Other components of the PERFEC System expect MIDI start and stop messages to reset sequences, so it is important that the system clock sends those messages at appropriate times.
 
 I tried using more `super()` class calls in `board_controller.py` to get rid of repetitive code in the subclasses.
