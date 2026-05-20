@@ -11,10 +11,6 @@
 # to try to ensure your DAW and OS will be able to differentiate
 # between different modules.
 
-# Because of the limitations of the old school Microsoft format
-# this MUST BE 8 CHARACTERS OR LESS
-# and ALL CAPS are recommended.
-
 import config
 import storage
 import usb_midi
