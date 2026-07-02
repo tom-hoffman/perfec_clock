@@ -25,50 +25,36 @@
 
 import gc
 print("After gc: " + str(gc.mem_free()))
-import supervisor   # pylint: disable=wrong-import-position
 
-<<<<<<< HEAD
-=======
 import time
 print("After time: " + str(gc.mem_free()))
 
->>>>>>> 7d4acad (Performance improvements and better tap w/help from Gemini.)
-
-from minimal_midi import MinimalMidi   # pylint: disable=wrong-import-position
-
+from minimal_midi import MinimalMidi
 print("After minimal_midi: " + str(gc.mem_free()))
 
-<<<<<<< HEAD
-import cpx   # pylint: disable=wrong-import-position
-=======
 import cpx
->>>>>>> 7d4acad (Performance improvements and better tap w/help from Gemini.)
 print("After cpx: " + str(gc.mem_free()))
 
-from model import ApplicationModel   # pylint: disable=wrong-import-position
+from model import ApplicationModel
 print("After model: " + str(gc.mem_free()))
 
-from board_controller import ActiveView   # pylint: disable=wrong-import-position
+from board_controller import ActiveView 
 print("After board controller: " + str(gc.mem_free()))
 
-<<<<<<< HEAD
-=======
 # We'll only trigger this manually.
 gc.disable()
 # Like so.
 gc.collect()
->>>>>>> 7d4acad (Performance improvements and better tap w/help from Gemini.)
 
 midi = MinimalMidi()
 
-mod = ApplicationModel()
+mod = ApplicationModel() 
 
 bc = ActiveView(mod, midi).update_mode()
 cpx.led.value = False
 bc.update_pixels()
 
 print("After object creation: " + str(gc.mem_free()))
-
 
 mod.next_pulse = time.monotonic_ns() + mod.nanos_per_pulse
 midi.send_start()
@@ -82,3 +68,8 @@ while True:
     if mod.changed:
         bc.update_pixels()
         mod.changed = False
+
+
+
+
+        
