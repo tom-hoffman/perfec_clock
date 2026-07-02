@@ -8,13 +8,8 @@ _TICKS_PERIOD = const(1<<29)
 
 class ApplicationModel(object):
     '''This class should contain properties that store the state of the application.'''
-<<<<<<< HEAD
-    def __init__(self,
-                 millis_per_pulse=config.millis_per_pulse,
-=======
     def __init__(self, 
                  nanos_per_pulse=config.nanos_per_pulse, 
->>>>>>> 7d4acad (Performance improvements and better tap w/help from Gemini.)
                  pulses=0,
                  last_tap=0,
                  next_pulse=None,
