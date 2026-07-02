@@ -13,10 +13,10 @@ _TAP_COLORS = ((8, 0, 16,), (16, 0, 8), (16, 8, 0), (0, 8, 16))
 
 get_time = time.monotonic_ns
 
-class View():
+class View(object):
 
     def __init__(self, model, midi, pix=cpx.pix):
-        self.model = model
+        self.model = model 
         self.midi = midi
         self.pix = pix
 
@@ -24,18 +24,15 @@ class View():
         if get_time() >= self.model.next_pulse:
             self.model.increment_pulses()
             self.send_pulse()
-<<<<<<< HEAD
-=======
             self.update_mode()
             gc.collect()
->>>>>>> 7d4acad (Performance improvements and better tap w/help from Gemini.)
 
     def update_mode(self):
         self.model.changed = True
         self.model.reset_photon()
-
+    
     def update_pixels(self, c):
-        # Re-draw the neopixels
+        # Re-draw the neopixels.
         self.pix.fill(c)
         self.pix[self.model.photon] = (32, 32, 32)
         cpx.pix.show()
@@ -43,13 +40,6 @@ class View():
 
 class ActiveView(View):
 
-<<<<<<< HEAD
-    def check_time(self):
-        for _ in range(0, config.midi_repeat):
-            super().check_time()
-
-=======
->>>>>>> 7d4acad (Performance improvements and better tap w/help from Gemini.)
     def update_mode(self):
         # Check the switch and return current mode.
         if cpx.switch_is_left():
@@ -63,13 +53,13 @@ class ActiveView(View):
 
     def check_buttons(self):
         pass
-
+    
     def update_pixels(self):
         super().update_pixels((0, 8, 0))
 
     def send_pulse(self):
         self.midi.send_clock()
-        cpx.led.value = not cpx.led.value
+        cpx.led.value = not(cpx.led.value)
 
 
 class TapView(View):
@@ -85,7 +75,7 @@ class TapView(View):
         else:
             super().update_mode()
             self.midi.send_start()
-            return ActiveView(self.model, self.midi, self.pix)
+            return ActiveView(self.model, self.midi, self.pix)    
 
     def update_pixels(self):
         
