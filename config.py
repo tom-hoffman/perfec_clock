@@ -3,17 +3,8 @@
 # Put starting variables here that might need to be changed by the user.
 
 # Give each Circuit Playground a unique name so you don't get confused!
-# Note that a MIDI network should only have one clock
+# Note that a MIDI network should only have one clock 
 # so you don't need to add an identifying number
-<<<<<<< HEAD
-USB_NAME: str = "CLOCK"
-
-# Starting value for time between MIDI clock pulses
-# the official default is 24 per quarter note
-# but this is often increased by doubling
-# 28 milliseconds per pulse equates to about 88 bpm.
-millis_per_pulse: int = 28
-=======
 
 from micropython import const
 
@@ -22,16 +13,10 @@ USB_NAME = "CLOCK"
 # Initial beats per minute
 starting_bpm: int = 120
 
->>>>>>> 7d4acad (Performance improvements and better tap w/help from Gemini.)
 
 # Pulses per quarter note
 ppqn: int = 24
 
-<<<<<<< HEAD
-# Increasing this number makes the time slightly more accurate
-# and the board somewhat less responsive.
-midi_repeat: int = 255
-=======
 # Correction for inherent latency in SAMD21 running CircuitPython.
 # This is based on testing against the Morningstar MIDI Monitor.  
 # In theory it should be consistent across boards, 
@@ -59,5 +44,3 @@ _TAP_TIMEOUT: int = const(2)
 
 # Converting to nanoseconds (don't edit)
 TAP_TIMEOUT_NS: int = const(_TAP_TIMEOUT * (10 ** 9))
-
->>>>>>> 7d4acad (Performance improvements and better tap w/help from Gemini.)
