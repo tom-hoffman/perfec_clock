@@ -3,7 +3,6 @@ import supervisor
 
 import config
 
-
 _TICKS_PERIOD = const(1<<29)
 
 class ApplicationModel(object):
@@ -56,7 +55,6 @@ class ApplicationModel(object):
         self.taps_received = 0
         self.tap_index = 0
         self.last_tap = now
-
 
     def process_tap(self, now: int):
         if (self.last_tap == 0) or ((now - self.last_tap) >= config.TAP_TIMEOUT_NS):
