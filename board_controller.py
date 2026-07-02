@@ -3,10 +3,15 @@
 # copyright 2026, Tom Hoffman
 # MIT License
 
+import gc
+import time
+
 import cpx
 import config
-import supervisor
 
+_TAP_COLORS = ((8, 0, 16,), (16, 0, 8), (16, 8, 0), (0, 8, 16))
+
+get_time = time.monotonic_ns
 
 class View():
 
@@ -16,9 +21,14 @@ class View():
         self.pix = pix
 
     def check_time(self):
-        if self.model.is_time_to_advance():
+        if get_time() >= self.model.next_pulse:
             self.model.increment_pulses()
             self.send_pulse()
+<<<<<<< HEAD
+=======
+            self.update_mode()
+            gc.collect()
+>>>>>>> 7d4acad (Performance improvements and better tap w/help from Gemini.)
 
     def update_mode(self):
         self.model.changed = True
@@ -33,15 +43,18 @@ class View():
 
 class ActiveView(View):
 
+<<<<<<< HEAD
     def check_time(self):
         for _ in range(0, config.midi_repeat):
             super().check_time()
 
+=======
+>>>>>>> 7d4acad (Performance improvements and better tap w/help from Gemini.)
     def update_mode(self):
         # Check the switch and return current mode.
         if cpx.switch_is_left():
             super().update_mode()
-            self.model.last_tap = None
+            self.model.last_tap = get_time()
             cpx.led.value = False
             self.midi.send_stop()
             return TapView(self.model, self.midi, self.pix)
@@ -63,11 +76,8 @@ class TapView(View):
 
     def check_buttons(self):
         if cpx.a_button.went_down() or cpx.b_button.went_down():
-            if self.model.last_tap:
-                new = supervisor.ticks_ms()
-                self.model.update_millis(new)
-            else:
-                self.model.last_tap = supervisor.ticks_ms()
+            now = get_time()
+            self.model.process_tap(now)
 
     def update_mode(self):
         if cpx.switch_is_left():
@@ -78,7 +88,8 @@ class TapView(View):
             return ActiveView(self.model, self.midi, self.pix)
 
     def update_pixels(self):
-        super().update_pixels((8, 0, 0))
+        
+        super().update_pixels(_TAP_COLORS[self.model.tap_index])
 
     def send_pulse(self):
         pass
