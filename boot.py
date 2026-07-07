@@ -22,7 +22,12 @@ supervisor.set_usb_identification(
 
 storage.remount("/", readonly=False)
 m = storage.getmount("/")
-m.label = config.USB_NAME
+n = config.USB_NAME
+m.label = n
+usb_midi.set_names(streaming_interface_name = n + "-STR",
+				   audio_control_interface_name =n  + "-AUD",
+				   in_jack_name = n + "-IN",
+				   out_jack_name = n + "-OUT")
+supervisor.set_usb_identification(manufacturer="PERFEC", 
+                                  product=n)
 storage.remount("/", readonly=True)
-
-usb_midi.set_names(streaming_interface_name = "CLOCK OUT")

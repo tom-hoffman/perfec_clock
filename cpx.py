@@ -10,21 +10,17 @@ import digitalio        # digital (on/off) output to pins, including board LED.
 import neopixel         # controls the RGB LEDs on the board
 
 class Debouncer(object):
-
-    def __init__(self, b, current_value=None):
+    def __init__(self, b):
         self.b = b
-        if current_value is None:
-            self.current_value = b.value
-        else:
-            self.current_value = current_value
+        self.current_value = b.value
 
     def went_down(self):
+        old = self.current_value
         new = self.b.value
-        changed = new and (not self.current_value)
         self.current_value = new
-        return changed
+        return new and not old
 
-led = digitalio.DigitalInOut(board.LED)
+led = digitalio.DigitalInOut(board.D13)
 led.direction = digitalio.Direction.OUTPUT
 led.value = True
 
@@ -42,7 +38,6 @@ switch = digitalio.DigitalInOut(board.SLIDE_SWITCH)
 switch.direction = digitalio.Direction.INPUT
 switch.pull = digitalio.Pull.UP
 
-def switch_is_left():
-    return switch.value
+switch_is_left = lambda: switch.value
 
 pix = neopixel.NeoPixel(board.NEOPIXEL, 10, brightness=0.2, auto_write=False)

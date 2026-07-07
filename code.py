@@ -1,75 +1,70 @@
-# SPDX-FileCopyrightText: 2025 Tom Hoffman & E-Cubed students
-# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2026 Tom Hoffman & E-Cubed students 
+# SPDX-License-Identifier: MIT 
 
-# Modular Playground Tap Tempo Clock
-
-# Module Description:
-# This is a CircuitPython implementation of a
-# tap tempo MIDI clock.
-# CircuitPython is not exactly ideal for precise timing,
-# so we need to make some concessions to maximize accuracy.
-
-# If we're in Active mode, main loop just checks the timing 
-# to send out a MIDI tick and occasionally the switch to 
-# see if we should change modes.
-
-# Tap mode stops the clock, because we want to be able to do that
-# to reset the sequencers.
-
-# This could be modified to keep the clock running at all times.
-
-# In tap mode, we calculate the tempo based on the timing of 
-# button taps.  For simplicity we're just doing the last two
-# taps (not an average of more).
-
+__version__ = "1.0.0 beta"
 
 import gc
 print("After gc: " + str(gc.mem_free()))
-
-import time
+import time 
 print("After time: " + str(gc.mem_free()))
-
-from minimal_midi import MinimalMidi
+from minimal_midi import MinimalMidi 
 print("After minimal_midi: " + str(gc.mem_free()))
-
-import cpx
+import cpx 
 print("After cpx: " + str(gc.mem_free()))
-
-from model import ApplicationModel
+from model import ApplicationModel 
 print("After model: " + str(gc.mem_free()))
-
-from board_controller import ActiveView 
+from board_controller import ActiveView, TapView # Pre-import TapView to cache global access
 print("After board controller: " + str(gc.mem_free()))
 
-# We'll only trigger this manually.
-gc.disable()
-# Like so.
 gc.collect()
 
 midi = MinimalMidi()
+mod = ApplicationModel()
 
-mod = ApplicationModel() 
+# Pre-instantiate both views to prevent dynamic heap fragmentation when switching modes
+view_active = ActiveView(mod, midi)
+view_tap = TapView(mod, midi) 
 
-bc = ActiveView(mod, midi).update_mode()
+# Set initial state
+bc = view_active.update_mode()
 cpx.led.value = False
 bc.update_pixels()
-
 print("After object creation: " + str(gc.mem_free()))
-
+gc.collect()
+# Initialize master clock time index
 mod.next_pulse = time.monotonic_ns() + mod.nanos_per_pulse
 midi.send_start()
 
-gc.collect()
 
+# Local Micro-Caching: Bind time-critical methods directly to local variable pointers.
+# This cuts out python's deep attribute/dictionary path crawling inside the while loop.
+_monotonic_ns = time.monotonic_ns
+_switch_is_left = cpx.switch_is_left
+
+# Direct view-method tracking anchors
+bc_check_time = bc.check_time
+bc_check_buttons = bc.check_buttons
+
+# Pre-instantiate both views into a fixed state tuple
+# Index True (1): ActiveView, Index False (0): TapView
+view_map = {True: view_active, False: view_tap}
+gc.collect()
 while True:
-    bc.check_time()
-    bc.check_buttons()
-    bc = bc.update_mode()
+    # 1. Immediate timing evaluation (Highest priority execution path)
+    bc_check_time(_monotonic_ns())
+    
+    # 2. Input handling
+    bc_check_buttons()
+    
+    # 3. Streamlined state check (Zero code duplication)
+    target_view = view_map[_switch_is_left()]
+    if bc is not target_view:
+        bc = target_view
+        bc_check_time = bc.check_time
+        bc_check_buttons = bc.check_buttons
+        mod.changed = True
+        
+    # 4. Hardware UI refresh
     if mod.changed:
         bc.update_pixels()
         mod.changed = False
-
-
-
-
-        
