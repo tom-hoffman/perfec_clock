@@ -17,7 +17,6 @@ DONT_UPDATE = {"config.py"}
 SKIP = {"make.py"}
 PY_EXT = "py"
 
-# Supported target versions
 SUPPORTED_VERSIONS = {"10.0.3", "10.1.4", "10.2.1"}
 
 PLATFORM_SUFFIXES = {
@@ -45,7 +44,6 @@ def generateRemotePath(root_path: Path, filename: str) -> Path:
         return root_path / f"{filename[:-len(PY_EXT)]}m{PY_EXT}"
 
 def fetch_mpy_cross(platform: str, version: str) -> Path:
-    """Downloads the required mpy-cross binary dynamically if it is missing."""
     if platform not in PLATFORM_SUFFIXES:
         print(f"Error: Unknown platform '{platform}'. Choose from: {list(PLATFORM_SUFFIXES.keys())}")
         sys.exit(1)
@@ -62,7 +60,7 @@ def fetch_mpy_cross(platform: str, version: str) -> Path:
         print(f"Downloading compiler: {url}")
         try:
             urllib.request.urlretrieve(url, local_binary_path)
-            local_binary_path.chmod(0o755)  # Make executable
+            local_binary_path.chmod(0o755)
             print("✓ Download complete.")
         except Exception as e:
             print(f"Error downloading compiler from {url}: {e}")
@@ -71,17 +69,19 @@ def fetch_mpy_cross(platform: str, version: str) -> Path:
     return local_binary_path
 
 def compile_and_copy(local_path: Path, remote_path: Path, mpy_cross_exe: Path) -> None:
-    """Process a single file with compilation + fallback copy logic."""
+    local_compiled = Path(f"{local_path.stem}.mpy")
+    
+    # Pre-clean stray files left behind from historical crash loops
+    if local_compiled.exists():
+        local_compiled.unlink()
+        
     try:
-        # Try compiling first
         subprocess.run(
             [str(mpy_cross_exe), str(local_path)],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             check=False
         )
-        # Check if compiler produced expected file locally
-        local_compiled = Path(f"{local_path.stem}.mpy")
         if local_compiled.exists():
             shutil.move(str(local_compiled), str(remote_path))
         else:
@@ -90,24 +90,40 @@ def compile_and_copy(local_path: Path, remote_path: Path, mpy_cross_exe: Path) -
         print(f" ! Compilation failed ({e}), copying directly...")
         shutil.copyfile(str(local_path), str(remote_path))
         print(f" ✗ Fallback copied: {remote_path}")
+    finally:
+        # Post-clean local artifact guarantee
+        if local_compiled.exists():
+            local_compiled.unlink()
 
-def run_build_for_version(platform: str, version: str, base_target_dir: Path, count: int | None, make_release: bool) -> None:
-    """Runs a complete build iteration for a specific version mapping."""
-    mpy_cross_exe = fetch_mpy_cross(platform, version)
+def main():
+    parser = argparse.ArgumentParser(description="Compile CircuitPython files.")
+    parser.add_argument("platform", help="Platform name string (e.g., linux-amd64)")
+    parser.add_argument("version", help="CircuitPython version number (e.g., 10.1.4)")
+    parser.add_argument("target_dir", help="Base target directory path for built files.")
+    parser.add_argument("count", type=int, nargs="?", default=None, help="Optional suffix count.")
+    
+    args = parser.parse_args()
+    
+    if args.version not in SUPPORTED_VERSIONS:
+        print(f"Error: Version '{args.version}' not supported. Choose from: {sorted(list(SUPPORTED_VERSIONS))}")
+        sys.exit(1)
+        
+    mpy_cross_exe = fetch_mpy_cross(args.platform, args.version)
     
     target_paths = []
-    if count is not None:
-        if count < 1:
+    if args.count is not None:
+        if args.count < 1:
             print("Error: Count must be 1 or greater.")
             sys.exit(1)
-        for i in range(1, count + 1):
-            target_paths.append(Path(f"{base_target_dir}{i}"))
+        base_path = Path(args.target_dir)
+        for i in range(1, args.count + 1):
+            target_paths.append(Path(f"{base_path}{i}"))
     else:
-        target_paths.append(base_target_dir)
+        target_paths.append(Path(args.target_dir))
 
     for remote_dir in target_paths:
         remote_dir.mkdir(parents=True, exist_ok=True)
-        print(f"\nProcessing build directory: {remote_dir} (Version: {version})")
+        print(f"\nProcessing build directory: {remote_dir}")
         print("Scanning directory...")
         
         for filename in os.listdir("."):
@@ -123,10 +139,8 @@ def run_build_for_version(platform: str, version: str, base_target_dir: Path, co
                         pass
                 else:
                     print(f" ✗ Not a Python file: {filename}")
-                    
             elif filename in SKIP:
                 print(f" ✗ Skipping: {filename}")
-                
             elif filename in DONT_UPDATE:
                 if not remote_path.exists():
                     shutil.copyfile(str(local_path), str(remote_path))
@@ -136,7 +150,6 @@ def run_build_for_version(platform: str, version: str, base_target_dir: Path, co
                         print(f" ⚠ WARNING: you may need to manually update {filename}")
                     else:
                         print(f" ✗ Remote copy up to date: {remote_path.name}")
-                        
             elif filename in DONT_PRECOMPILE:
                 if remote_path.exists():
                     if local_is_more_recent(local_path, remote_path):
@@ -147,7 +160,6 @@ def run_build_for_version(platform: str, version: str, base_target_dir: Path, co
                 else:
                     shutil.copyfile(str(local_path), str(remote_path))
                     print(f" ✓ Copied: {remote_path.name}")
-                    
             else:
                 if remote_path.exists():
                     if local_is_more_recent(local_path, remote_path):
@@ -158,42 +170,6 @@ def run_build_for_version(platform: str, version: str, base_target_dir: Path, co
                 else:
                     compile_and_copy(local_path, remote_path, mpy_cross_exe)
                     print(f" ✓ Compiled and copied: {remote_path.name}")
-                    
-        # Archive distribution handle
-        if make_release:
-            bin_dir = Path("../bin").resolve()
-            bin_dir.mkdir(parents=True, exist_ok=True)
-            archive_base = bin_dir / f"{remote_dir.name}-v{version}"
-            shutil.make_archive(str(archive_base), 'zip', remote_dir)
-            print(f" ✓ Release ZIP saved to: {archive_base}.zip")
-
-def main():
-    parser = argparse.ArgumentParser(description="Compile CircuitPython files dynamically.")
-    parser.add_argument("platform", help="Platform name string (e.g., linux-amd64, windows, macos)")
-    parser.add_argument("version", nargs="?", default=None, help="CircuitPython version number (e.g., 10.0.3). Optional if running --make-release.")
-    parser.add_argument("target_dir", help="Base target directory path for built files.")
-    parser.add_argument("count", type=int, nargs="?", default=None, 
-                        help="Optional suffix count to generate matching multi-target directories (e.g., EUCLID1, EUCLID2).")
-    parser.add_argument("--make-release", action="store_true", help="Build all supported versions, zip them, and store inside '../bin/'.")
-    
-    args = parser.parse_args()
-    
-    # Validation logic depends on mode
-    if args.make_release:
-        print(f"🚀 Release mode active. Processing versions: {', '.join(sorted(SUPPORTED_VERSIONS))}")
-        for ver in sorted(SUPPORTED_VERSIONS):
-            run_build_for_version(args.platform, ver, Path(args.target_dir), args.count, make_release=True)
-    else:
-        if args.version is None:
-            parser.error("the following arguments are required: version (or pass --make-release instead)")
-            
-        if args.version not in SUPPORTED_VERSIONS:
-            sorted_versions = sorted(list(SUPPORTED_VERSIONS))
-            print(f"Error: CircuitPython version '{args.version}' is not supported.")
-            print(f"Supported versions are: {', '.join(sorted_versions)}")
-            sys.exit(1)
-            
-        run_build_for_version(args.platform, args.version, Path(args.target_dir), args.count, make_release=False)
 
 if __name__ == "__main__":
     main()

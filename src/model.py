@@ -14,7 +14,8 @@ class ApplicationModel(object):
     '''Highly optimized state model for a strict straight-time tap-tempo clock.'''
     def __init__(self, nanos_per_pulse=config.nanos_per_pulse, pulses=0, last_tap=0, next_pulse=None, photon=0, changed=True, tap_index=0, taps_received=0):
         self.nanos_per_pulse = nanos_per_pulse
-        self.pulses = pulses
+        # Prime the clock at the final tick boundary so the next incoming pulse triggers step 0 instantly
+        self.pulses = pulses if pulses is not None else (_PPQN - 1)
         self.last_tap = last_tap
         self.next_pulse = next_pulse
         self.photon = photon
@@ -45,12 +46,13 @@ class ApplicationModel(object):
             self.pulses = p
 
     def zero_pulses(self):
-        self.pulses = 0
+        # Priming state for clean external clock starts
+        self.pulses = _PPQN - 1
         self.changed = True
 
     def reset_photon(self):
-        self.photon = 0
-        self.pulses = 0
+        self.photon = 9
+        self.pulses = _PPQN - 1
         self.changed = True
 
     def advance_photon(self):
