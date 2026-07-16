@@ -56,13 +56,13 @@ This package is based on the **MMB template**.  Since this package only sends th
 
 I tried using more `super()` class calls in `board_controller.py` to get rid of repetitive code in the subclasses.
 
-## Testing output consistency.
+## Checking output consistency
 
-On Ubuntu (probably other Debian-based Linux distributions as well) you can check the timing of your PERFEC Clock with a one line command:
+On Ubuntu (presumably at least other Debian-based Linux distributions as well) you can check the timing of your PERFEC Clock with a one line command:
 
-`aseqdump -p XX:X | perl -MTime::HiRes=time -ne 'BEGIN{$|=1; $t=time} if(/Clock/){$n=time; printf "Interval: %.2f ms\n", ($n-$t)*1000; $t=$n}'`
+```aseqdump -p XX:X | perl -MTime::HiRes=time -ne 'BEGIN{$|=1; $t=time} if(/Clock/){$n=time; printf "Interval: %.2f ms\n", ($n-$t)*1000; $t=$n}'```
 
-Where `XX:X` should be replaced by the number corresponding to your CPX according to this command:
+Where `XX:X` should be replaced by the number corresponding to your CLOCK according to this command:
 
 `aseqdump -l`
 
@@ -74,3 +74,5 @@ sudo apt install alsa-utils
 ```
 
 Google Gemini came up with this. It works for me.
+
+Expect to see some extra variation in time every 24 (or whatever you set as your PPQN) pulses as the neopixels have to be re-drawn.  There should be a longer delay followed by a shorter one to keep the overall tempo on track.

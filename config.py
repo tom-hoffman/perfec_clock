@@ -15,7 +15,8 @@ STARTING_BPM: int = 88
 
 # Pulses (MIDI clock messages) per quarter note.
 # The traditional standard is that MIDI devices count 24 pulses
-# per quarter note.  
+# per quarter note.  This setting determines the rate that the 
+# neopixels advance.
 PPQN: int = 24
 
 # Measured baseline internal latency of the processing loop in nanoseconds.
