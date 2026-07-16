@@ -2,13 +2,10 @@
 # minimal_midi.py
 # copyright 2026, Tom Hoffman
 # MIT License
-#
-# # This version only sends three global messages.
 
-# Note that MinimalMidi uses 0-15 numbering for MIDI channels.
-# Your MIDI device may display channels as 1-16,
-# thus you may need to subtract 1 from the displayed value
-# to match the value here.
+# Customized ultra-minimal MIDI implementation for this module.
+
+# This version only sends three global messages.
 
 import usb_midi
 from micropython import const
@@ -20,15 +17,18 @@ _STOP = const(b'\xFC')
 # These "ports" are not to be confused with MIDI channels, etc.
 _OUTIE = usb_midi.ports[1]
 
-
 class MinimalMidi(object):
-    """Tightly implementing the subset of MIDI we need."""
+    """Sends MIDI Clock, Start and Stop messages."""
+    
+    def __init__(self):
+        # Cache the port's write method to bypass dictionary lookups in loops
+        self._write = _OUTIE.write
 
     def send_clock(self):
-        _OUTIE.write(_CLOCK)
+        self._write(_CLOCK)
 
     def send_start(self):
-        _OUTIE.write(_START)
+        self._write(_START)
 
     def send_stop(self):
-        _OUTIE.write(_STOP)
+        self._write(_STOP)

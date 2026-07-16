@@ -1,6 +1,10 @@
 # PERFEC System: Tap-tempo MIDI Clock
 
-A MIDI clock for the PERFEC System, written in CircuitPython for the Adafruit Circuit Playground Express (CPX).
+A simple MIDI clock for the PERFEC System, written in CircuitPython for the Adafruit Circuit Playground Express (CPX). 
+
+The starting tempo can be set through configuration and changed by tapping the buttons ("tap-tempo").
+
+This implementation is optimized for accuracy, with average jitter of around 0.5 milliseconds.
 
 ## Use
 
@@ -51,3 +55,22 @@ Other components of the PERFEC System expect MIDI start and stop messages to res
 This package is based on the **MMB template**.  Since this package only sends three global MIDI messages (and receives none), there is no separate `midi_controller.py` and the modified version of `minimal_midi.py` is extra minimal.
 
 I tried using more `super()` class calls in `board_controller.py` to get rid of repetitive code in the subclasses.
+
+## Testing output consistency.
+
+On Ubuntu (probably other Debian-based Linux distributions as well) you can check the timing of your PERFEC Clock with a one line command:
+
+`aseqdump -p XX:X | perl -MTime::HiRes=time -ne 'BEGIN{$|=1; $t=time} if(/Clock/){$n=time; printf "Interval: %.2f ms\n", ($n-$t)*1000; $t=$n}'`
+
+Where `XX:X` should be replaced by the number corresponding to your CPX according to this command:
+
+`aseqdump -l`
+
+You may need to install the `alsa-utils` package:
+
+```
+sudo apt update
+sudo apt install alsa-utils
+```
+
+Google Gemini came up with this. It works for me.

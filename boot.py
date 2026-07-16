@@ -6,19 +6,19 @@
 # sets the name of the Circuit Playground as it appears to a PC
 # from https://github.com/todbot/circuitpython-tricks#usb
 
-# Note that all the USB indicators might not show up without unplugging the board
-# and (on Ubunutu) flushing the USB cache:
-# `sudo systemctl restart alsa-state``
+# This module runs first on boot (before `code.py`).
+# sets the name of the Circuit Playground as it appears to a PC
+# from https://github.com/todbot/circuitpython-tricks#usb
 
-import usb-midi
-import supervisor
+# Also essentially spamming all the other USB MIDI related names
+# to try to ensure your DAW and OS will be able to differentiate
+# between different modules.
+
+
 import config
 import storage
-
-supervisor.set_usb_identification(
-	manufacturer="PERFEC Systems",
-	product=config.USB_NAME
-)
+import usb_midi
+import supervisor
 
 storage.remount("/", readonly=False)
 m = storage.getmount("/")
@@ -28,6 +28,6 @@ usb_midi.set_names(streaming_interface_name = n + "-STR",
 				   audio_control_interface_name =n  + "-AUD",
 				   in_jack_name = n + "-IN",
 				   out_jack_name = n + "-OUT")
-supervisor.set_usb_identification(manufacturer="PERFEC", 
+supervisor.set_usb_identification(manufacturer="PERFEC " + n, 
                                   product=n)
 storage.remount("/", readonly=True)

@@ -4,23 +4,28 @@
 # MIT License
 
 # Set up board hardware and simple button Debouncer.
+# This is mostly just boilerplate.
 
 import board            # helps set up pins, etc. on the board
 import digitalio        # digital (on/off) output to pins, including board LED.
 import neopixel         # controls the RGB LEDs on the board
 
 class Debouncer(object):
-    def __init__(self, b):
+    '''Very simplified implementation of Debouncer.went_down().'''
+    def __init__(self, b, current_value=None):
         self.b = b
-        self.current_value = b.value
+        if current_value is None:
+            self.current_value = b.value
+        else:
+            self.current_value = current_value
 
     def went_down(self):
-        old = self.current_value
         new = self.b.value
+        changed = new and (not self.current_value)
         self.current_value = new
-        return new and not old
+        return changed
 
-led = digitalio.DigitalInOut(board.D13)
+led = digitalio.DigitalInOut(board.LED)
 led.direction = digitalio.Direction.OUTPUT
 led.value = True
 
@@ -38,6 +43,8 @@ switch = digitalio.DigitalInOut(board.SLIDE_SWITCH)
 switch.direction = digitalio.Direction.INPUT
 switch.pull = digitalio.Pull.UP
 
-switch_is_left = lambda: switch.value
+def switch_is_left():
+    '''Quick convenience method so you don't get confused about direction.'''
+    return switch.value
 
 pix = neopixel.NeoPixel(board.NEOPIXEL, 10, brightness=0.2, auto_write=False)
